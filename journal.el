@@ -1,5 +1,7 @@
 (defcustom journal-directory "~/journal" 
   "Directory for storing journal text files.")
+(defcustom journal-encrypt-to nil
+  "List of keys to encrypt journal entries to")
 
 (defvar journal-saver nil)
 (defvar journal-start-time nil)
@@ -30,10 +32,13 @@
   "Open today's journal entry file."
   (interactive)
   (find-file (concat journal-directory
-                     (format-time-string "/journal-%Y-%m-%d.txt")))
+                     (format-time-string 
+                      (if journal-encrypt-to "/journal-%Y-%m-%d.txt.gpg"
+                        "/journal-%Y-%m-%d.txt"))))
   (paragraph-indent-text-mode)
   (auto-fill-mode 1)
   (make-local-variable 'journal-start-time)
+  (setq-local epa-file-encrypt-to journal-encrypt-to)
   (journal-stop)
   (setq journal-start-time (float-time))
   (setq journal-start-wc (word-count))
